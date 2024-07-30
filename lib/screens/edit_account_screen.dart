@@ -15,7 +15,6 @@ class EditAccountScreen extends ConsumerStatefulWidget {
 class _EditAccountScreenState extends ConsumerState<EditAccountScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _surnameController = TextEditingController();
   final _emailController = TextEditingController();
   File? _image;
 

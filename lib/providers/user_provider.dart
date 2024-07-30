@@ -10,7 +10,7 @@ final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
   return UserNotifier(ref);
 });
 
-final Uuid uuid = const Uuid();
+const Uuid uuid = Uuid();
 
 class UserNotifier extends StateNotifier<User?> {
   final Ref _ref;
