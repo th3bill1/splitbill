@@ -23,19 +23,20 @@ class _EditAccountScreenState extends ConsumerState<EditAccountScreen> {
   void initState() {
     super.initState();
     final user = ref.read(userProvider);
-    _nameController.text = user.name;
-    _surnameController.text = user.surname;
-    _emailController.text = user.email;
+    if (user != null) {
+      _nameController.text = user.name;
+      _emailController.text = user.email;
+    }
   }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
+    if (pickedFile != null) {
+      setState(() {
         _image = File(pickedFile.path);
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -55,8 +56,8 @@ class _EditAccountScreenState extends ConsumerState<EditAccountScreen> {
                 child: CircleAvatar(
                   backgroundImage: _image != null
                       ? FileImage(_image!)
-                      : AssetImage(ref.read(userProvider).icon)
-                          as ImageProvider,
+                      : AssetImage(ref.read(userProvider)?.icon ??
+                          'assets/default_avatar.png') as ImageProvider,
                   radius: 50,
                 ),
               ),
@@ -95,16 +96,18 @@ class _EditAccountScreenState extends ConsumerState<EditAccountScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final updatedUser = User(
-                      name: _nameController.text,
-                      surname: _surnameController.text,
-                      email: _emailController.text,
-                      icon: _image != null
-                          ? _image!.path
-                          : ref.read(userProvider).icon,
-                    );
-                    ref.read(userProvider.notifier).updateUser(updatedUser);
-                    Navigator.pop(context);
+                    final user = ref.read(userProvider);
+                    if (user != null) {
+                      final updatedUser = User(
+                        id: user.id,
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        icon: _image != null ? _image!.path : user.icon,
+                        friends: user.friends,
+                      );
+                      ref.read(userProvider.notifier).updateUser(updatedUser);
+                      Navigator.pop(context);
+                    }
                   }
                 },
                 child: const Text('Save'),

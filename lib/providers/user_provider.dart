@@ -1,32 +1,42 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user.dart';
+import '../services/firestore_service.dart';
 
-class UserNotifier extends StateNotifier<User> {
-  UserNotifier()
-      : super(User(
-            name: 'John',
-            surname: 'Doe',
-            email: 'john.doe@example.com',
-            icon: 'assets/user_icon.png'));
+final firestoreServiceProvider =
+    Provider<FirestoreService>((ref) => FirestoreService());
 
-  void updateUser(User user) {
+final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
+  return UserNotifier(ref);
+});
+
+class UserNotifier extends StateNotifier<User?> {
+  final Ref _ref;
+  UserNotifier(this._ref) : super(null);
+
+  Future<void> loadUser(String userId) async {
+    final user = await _ref.read(firestoreServiceProvider).getUser(userId);
     state = user;
   }
 
-  void updateIcon(String iconPath) {
-    state = User(
-        name: state.name,
-        surname: state.surname,
-        email: state.email,
-        icon: iconPath);
+  Future<void> addUser(User user) async {
+    await _ref.read(firestoreServiceProvider).addUser(user);
+    state = user;
   }
 
-  void updateDetails(
-      {required String name, required String surname, required String email}) {
-    state = User(name: name, surname: surname, email: email, icon: state.icon);
+  Future<void> updateUser(User user) async {
+    await _ref.read(firestoreServiceProvider).updateUser(user);
+    state = user;
+  }
+
+  Future<void> addFriend(String friendId) async {
+    if (state != null) {
+      await _ref.read(firestoreServiceProvider).addFriend(state!.id, friendId);
+      await loadUser(state!.id);
+    }
   }
 }
 
-final userProvider = StateNotifierProvider<UserNotifier, User>((ref) {
-  return UserNotifier();
+final friendListProvider =
+    StreamProvider.family<List<User>, String>((ref, userId) {
+  return ref.read(firestoreServiceProvider).getFriends(userId);
 });

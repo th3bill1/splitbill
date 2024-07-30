@@ -4,7 +4,7 @@ class BillSplit {
   String id;
   String name;
   List<Bill> bills;
-  String userId; // Add userId to track the owner of the billsplit
+  String userId;
 
   BillSplit(
       {required this.id,

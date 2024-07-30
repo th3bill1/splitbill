@@ -19,7 +19,8 @@ class AccountScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const EditAccountScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const EditAccountScreen()),
               );
             },
           ),
@@ -31,13 +32,11 @@ class AccountScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             CircleAvatar(
-              backgroundImage: AssetImage(user.icon),
+              backgroundImage: AssetImage(user!.icon),
               radius: 50,
             ),
             const SizedBox(height: 20),
             Text('Name: ${user.name}', style: const TextStyle(fontSize: 18)),
-            Text('Surname: ${user.surname}',
-                style: const TextStyle(fontSize: 18)),
             Text('Email: ${user.email}', style: const TextStyle(fontSize: 18)),
           ],
         ),
