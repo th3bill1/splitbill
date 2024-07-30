@@ -1,0 +1,10 @@
+<resources>
+    <string name="default_web_client_id">YOUR_DEFAULT_WEB_CLIENT_ID</string>
+    <string name="firebase_database_url">YOUR_FIREBASE_DATABASE_URL</string>
+    <string name="gcm_defaultSenderId">252840820791</string>
+    <string name="google_api_key">AIzaSyBtTpQYcgHCfhdJFB5ntJdCOSYJgLHPleM</string>
+    <string name="google_app_id">1:252840820791:android:47c97169d2c808faf37fb2</string>
+    <string name="google_crash_reporting_api_key">AIzaSyBtTpQYcgHCfhdJFB5ntJdCOSYJgLHPleM</string>
+    <string name="google_storage_bucket">splitbill-93a0f.appspot.com</string>
+    <string name="project_id">splitbill-93a0f</string>
+</resources>

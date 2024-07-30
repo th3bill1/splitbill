@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/user_provider.dart';
@@ -28,18 +29,25 @@ class AccountScreen extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            CircleAvatar(
-              backgroundImage: AssetImage(user!.icon),
-              radius: 50,
-            ),
-            const SizedBox(height: 20),
-            Text('Name: ${user.name}', style: const TextStyle(fontSize: 18)),
-            Text('Email: ${user.email}', style: const TextStyle(fontSize: 18)),
-          ],
-        ),
+        child: user == null
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundImage: user.icon.isNotEmpty
+                        ? FileImage(File(user.icon))
+                        : const AssetImage('assets/default_avatar.png')
+                            as ImageProvider,
+                    radius: 50,
+                  ),
+                  const SizedBox(height: 20),
+                  Text('Name: ${user.name}',
+                      style: const TextStyle(fontSize: 18)),
+                  Text('Email: ${user.email}',
+                      style: const TextStyle(fontSize: 18)),
+                ],
+              ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:splitbill/providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import 'home_screen.dart';
 
@@ -13,6 +14,7 @@ class RegistrationScreen extends ConsumerStatefulWidget {
 class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nicknameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -27,6 +29,16 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
           key: _formKey,
           child: Column(
             children: <Widget>[
+              TextFormField(
+                controller: _nicknameController,
+                decoration: const InputDecoration(labelText: 'Nickname'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your nickname';
+                  }
+                  return null;
+                },
+              ),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -53,16 +65,23 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
+                      await ref.read(userProvider.notifier).addUser(
+                            _emailController.text,
+                            _nicknameController.text,
+                          );
                       await ref.read(authProvider.notifier).signUp(
                             _emailController.text,
                             _passwordController.text,
                           );
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
                       );
                     } catch (e) {
-                      // Handle error
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Registration failed')),
+                      );
                     }
                   }
                 },

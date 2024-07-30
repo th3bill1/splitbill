@@ -73,6 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         backgroundColor: Colors.white,
+        unselectedItemColor: Colors.grey,
         selectedItemColor: Colors.lightBlue,
         onTap: _onItemTapped,
       ),

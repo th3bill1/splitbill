@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user.dart';
 import '../services/firestore_service.dart';
+import 'package:uuid/uuid.dart';
 
 final firestoreServiceProvider =
     Provider<FirestoreService>((ref) => FirestoreService());
@@ -8,6 +9,8 @@ final firestoreServiceProvider =
 final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
   return UserNotifier(ref);
 });
+
+final Uuid uuid = const Uuid();
 
 class UserNotifier extends StateNotifier<User?> {
   final Ref _ref;
@@ -18,7 +21,9 @@ class UserNotifier extends StateNotifier<User?> {
     state = user;
   }
 
-  Future<void> addUser(User user) async {
+  Future<void> addUser(String email, String name) async {
+    User user =
+        User(id: uuid.v4(), email: email, name: name, friends: [], icon: "");
     await _ref.read(firestoreServiceProvider).addUser(user);
     state = user;
   }

@@ -64,20 +64,10 @@ class _EditAccountScreenState extends ConsumerState<EditAccountScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Nickname'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _surnameController,
-                decoration: const InputDecoration(labelText: 'Surname'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your surname';
+                    return 'Please enter your nickname';
                   }
                   return null;
                 },

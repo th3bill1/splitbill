@@ -5,12 +5,13 @@ class User {
   List<String> friends;
   String icon;
 
-  User(
-      {required this.id,
-      required this.name,
-      required this.email,
-      required this.friends,
-      required this.icon});
+  User({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.friends,
+    required this.icon,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -27,8 +28,8 @@ class User {
       id: map['id'],
       name: map['name'],
       email: map['email'],
-      friends: List<String>.from(map['friends']),
-      icon: map['icon'],
+      friends: List<String>.from(map['friends'] ?? []),
+      icon: map['icon'] ?? '',
     );
   }
 }
