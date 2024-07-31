@@ -6,6 +6,7 @@ import 'package:splitbill/screens/settings_screen.dart';
 import 'package:splitbill/screens/account_screen.dart';
 import 'package:splitbill/screens/login_screen.dart';
 import '../providers/auth_provider.dart';
+import 'package:splitbill/screens/notifications_screen.dart'; // Import the notifications screen
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -43,9 +44,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: const Text('Bill Splitter'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await ref.read(authProvider.notifier).signOut();
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationsScreen()),
+              );
             },
           ),
         ],

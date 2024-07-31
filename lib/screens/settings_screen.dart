@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/currency_provider.dart';
+import '../providers/auth_provider.dart'; // Import the auth provider
+import 'login_screen.dart'; // Import the login screen
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
@@ -94,6 +96,23 @@ class SettingsScreen extends ConsumerWidget {
                     ref.read(currencyProvider.notifier).state = value;
                   }
                 },
+              ),
+            ),
+            const Spacer(), // Pushes the sign-out button to the bottom
+            Center(
+              child: TextButton(
+                onPressed: () async {
+                  await ref.read(authProvider.notifier).signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
+                },
+                child: const Text(
+                  'Sign Out',
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
             ),
           ],
