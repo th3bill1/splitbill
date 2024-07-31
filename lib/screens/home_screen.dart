@@ -6,7 +6,7 @@ import 'package:splitbill/screens/settings_screen.dart';
 import 'package:splitbill/screens/account_screen.dart';
 import 'package:splitbill/screens/login_screen.dart';
 import '../providers/auth_provider.dart';
-import 'package:splitbill/screens/notifications_screen.dart'; // Import the notifications screen
+import 'package:splitbill/screens/notifications_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

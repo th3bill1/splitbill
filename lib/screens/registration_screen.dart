@@ -65,13 +65,13 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {
-                      await ref.read(userProvider.notifier).addUser(
-                            _emailController.text,
-                            _nicknameController.text,
-                          );
                       await ref.read(authProvider.notifier).signUp(
                             _emailController.text,
                             _passwordController.text,
+                          );
+                      await ref.read(userProvider.notifier).addUser(
+                            _emailController.text,
+                            _nicknameController.text,
                           );
                       Navigator.pushReplacement(
                         context,

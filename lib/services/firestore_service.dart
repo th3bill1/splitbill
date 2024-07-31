@@ -13,6 +13,7 @@ class FirestoreService {
       final doc = querySnapshot.docs.first;
       return User.fromMap(doc.data());
     }
+    print('not found');
     return null;
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:splitbill/providers/auth_provider.dart';
 import '../models/user.dart';
 import '../services/firestore_service.dart';
 import 'package:uuid/uuid.dart';
@@ -22,8 +23,9 @@ class UserNotifier extends StateNotifier<User?> {
   }
 
   Future<void> addUser(String email, String name) async {
-    User user =
-        User(id: uuid.v4(), email: email, name: name, friends: [], icon: "");
+    var id = _ref.read(authProvider)?.uid;
+    if (id == null) throw Exception('invalid id');
+    User user = User(id: id, email: email, name: name, friends: [], icon: "");
     await _ref.read(firestoreServiceProvider).addUser(user);
     state = user;
   }
