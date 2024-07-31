@@ -1,16 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:splitbill/providers/user_provider.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
-  return AuthNotifier();
+  return AuthNotifier(ref);
 });
 
 class AuthNotifier extends StateNotifier<User?> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Ref _ref;
 
-  AuthNotifier() : super(null) {
-    _auth.authStateChanges().listen((User? user) {
+  AuthNotifier(this._ref) : super(null) {
+    _auth.authStateChanges().listen((User? user) async {
       state = user;
+      var id = state?.uid;
+      if (id != null) _ref.read(userProvider.notifier).loadUser(id);
     });
   }
 

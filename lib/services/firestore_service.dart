@@ -6,9 +6,12 @@ class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<User?> getUser(String userId) async {
-    final doc = await _db.collection('users').doc(userId).get();
-    if (doc.exists) {
-      return User.fromMap(doc.data()!);
+    print(userId);
+    final querySnapshot =
+        await _db.collection('users').where('id', isEqualTo: userId).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final doc = querySnapshot.docs.first;
+      return User.fromMap(doc.data());
     }
     return null;
   }
