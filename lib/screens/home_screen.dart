@@ -7,6 +7,9 @@ import 'package:splitbill/screens/account_screen.dart';
 import 'package:splitbill/screens/login_screen.dart';
 import '../providers/auth_provider.dart';
 import 'package:splitbill/screens/notifications_screen.dart';
+import '../models/friend_invitation.dart';
+import '../providers/user_provider.dart';
+import 'package:splitbill/widgets/badge.dart' as custom_badge;
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -34,6 +37,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider);
+    final invitations = user != null
+        ? ref.watch(friendInvitationsProvider(user.uid))
+        : const AsyncValue<List<FriendInvitation>>.loading();
 
     if (user == null) {
       return const LoginScreen();
@@ -43,15 +49,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const Text('Bill Splitter'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationsScreen()),
-              );
-            },
+          invitations.when(
+            data: (invitations) => IconButton(
+              icon: custom_badge.Badge(
+                value: invitations.length.toString(),
+                child: const Icon(Icons.notifications),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationsScreen()),
+                );
+              },
+            ),
+            loading: () => IconButton(
+              icon: const Icon(Icons.notifications),
+              onPressed: () {},
+            ),
+            error: (error, stack) => IconButton(
+              icon: const Icon(Icons.notifications),
+              onPressed: () {},
+            ),
           ),
         ],
       ),

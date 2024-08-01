@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:splitbill/providers/auth_provider.dart';
 import '../models/user.dart';
+import '../models/friend_invitation.dart';
 import '../services/firestore_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,7 +25,7 @@ class UserNotifier extends StateNotifier<User?> {
 
   Future<void> addUser(String email, String name) async {
     var id = _ref.read(authProvider)?.uid;
-    if (id == null) throw Exception('invalid id');
+    if (id == null) throw Exception('Invalid id');
     User user = User(id: id, email: email, name: name, friends: [], icon: "");
     await _ref.read(firestoreServiceProvider).addUser(user);
     state = user;
@@ -41,9 +42,61 @@ class UserNotifier extends StateNotifier<User?> {
       await loadUser(state!.id);
     }
   }
+
+  Future<void> removeFriend(String friendId) async {
+    if (state != null) {
+      await _ref
+          .read(firestoreServiceProvider)
+          .removeFriend(state!.id, friendId);
+      await loadUser(state!.id);
+    }
+  }
+
+  Future<void> sendFriendInvitation(String friendName) async {
+    final friend =
+        await _ref.read(firestoreServiceProvider).getUserByNickname(friendName);
+    if (friend != null && state != null) {
+      await _ref
+          .read(firestoreServiceProvider)
+          .sendFriendInvitation(state!.id, friend.id);
+    } else {
+      final friend =
+          await _ref.read(firestoreServiceProvider).getUserByEmail(friendName);
+      if (friend != null && state != null) {
+        await _ref
+            .read(firestoreServiceProvider)
+            .sendFriendInvitation(state!.id, friend.id);
+      } else {
+        throw Exception('Friend not found or user not authenticated');
+      }
+    }
+  }
+
+  Future<void> acceptFriendInvitation(String invitationId) async {
+    await _ref
+        .read(firestoreServiceProvider)
+        .acceptFriendInvitation(invitationId);
+    final userId = _ref.read(authProvider)?.uid;
+    if (userId != null) {
+      await loadUser(userId);
+    }
+  }
+
+  void setUser(User user) {
+    state = user;
+  }
+
+  void clearUser() {
+    state = null;
+  }
 }
 
 final friendListProvider =
     StreamProvider.family<List<User>, String>((ref, userId) {
   return ref.read(firestoreServiceProvider).getFriends(userId);
+});
+
+final friendInvitationsProvider =
+    StreamProvider.family<List<FriendInvitation>, String>((ref, userId) {
+  return ref.read(firestoreServiceProvider).getFriendInvitations(userId);
 });

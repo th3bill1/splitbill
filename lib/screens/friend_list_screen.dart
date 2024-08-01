@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user.dart';
+import '../models/friend_invitation.dart';
 import '../providers/user_provider.dart';
+import 'package:splitbill/widgets/badge.dart' as custom_badge;
+import 'package:splitbill/screens/firend_invitations_screen.dart';
+import 'package:splitbill/screens/add_friend_screen.dart';
 
 class FriendListScreen extends ConsumerWidget {
   const FriendListScreen({super.key});
@@ -12,11 +16,35 @@ class FriendListScreen extends ConsumerWidget {
     final friends = user != null
         ? ref.watch(friendListProvider(user.id))
         : const AsyncValue<List<User>>.loading();
+    final invitations = user != null
+        ? ref.watch(friendInvitationsProvider(user.id))
+        : const AsyncValue<List<FriendInvitation>>.loading();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Friend List'),
         actions: [
+          invitations.when(
+            data: (invitations) => invitations.isNotEmpty
+                ? IconButton(
+                    icon: custom_badge.Badge(
+                      value: invitations.length.toString(),
+                      child: const Icon(Icons.people_rounded),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              FriendInvitationsScreen(userId: user!.id),
+                        ),
+                      );
+                    },
+                  )
+                : Container(),
+            loading: () => Container(),
+            error: (error, stack) => Container(),
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
@@ -37,77 +65,21 @@ class FriendListScreen extends ConsumerWidget {
             return ListTile(
               title: Text(friend.name),
               subtitle: Text(friend.email),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () async {
+                  await ref.read(userProvider.notifier).removeFriend(friend.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Friend removed')),
+                  );
+                },
+              ),
             );
           },
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) =>
             const Center(child: Text('Error loading friends')),
-      ),
-    );
-  }
-}
-
-class AddFriendScreen extends ConsumerStatefulWidget {
-  const AddFriendScreen({super.key});
-
-  @override
-  _AddFriendScreenState createState() => _AddFriendScreenState();
-}
-
-class _AddFriendScreenState extends ConsumerState<AddFriendScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Friend'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Friend Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final userId = ref.watch(userProvider)?.id;
-                    if (userId != null) {
-                      final friend = await ref
-                          .read(firestoreServiceProvider)
-                          .getUserByEmail(_emailController.text);
-                      if (friend != null) {
-                        await ref
-                            .read(userProvider.notifier)
-                            .addFriend(friend.id);
-                        Navigator.pop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Friend not found')),
-                        );
-                      }
-                    }
-                  }
-                },
-                child: const Text('Add Friend'),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
