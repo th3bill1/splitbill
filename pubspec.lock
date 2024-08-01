@@ -44,10 +44,11 @@ packages:
   cloud_firestore:
     dependency: "direct main"
     description:
-      name: cloud_firestore
-      sha256: a7782612945fffa07cb99cf2e1e152f6c6152ee57fc201a7249e08a97a875bdb
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/cloud_firestore/cloud_firestore"
+      ref: "pull/13135/head"
+      resolved-ref: a231b78eae5a9196344905de4cb72df8bc7b961e
+      url: "https://github.com/firebase/flutterfire.git"
+    source: git
     version: "5.2.0"
   cloud_firestore_platform_interface:
     dependency: transitive
@@ -268,10 +269,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_for_web
-      sha256: "869fe8a64771b7afbc99fc433a5f7be2fea4d1cb3d7c11a48b6b579eb9c797f0"
+      sha256: "5d6eb13048cd47b60dbf1a5495424dea226c5faf3950e20bf8120a58efb5b5f3"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "3.0.4"
   image_picker_ios:
     dependency: transitive
     description:

@@ -6,11 +6,11 @@ class Badge extends StatelessWidget {
   final Color color;
 
   const Badge({
-    Key? key,
+    super.key,
     required this.child,
     required this.value,
     this.color = Colors.red,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

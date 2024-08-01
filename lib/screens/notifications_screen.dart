@@ -45,7 +45,7 @@ class NotificationsScreen extends ConsumerWidget {
                       );
                     } else {
                       return ListTile(
-                        title: Text('You have a new friend invitation!'),
+                        title: const Text('You have a new friend invitation!'),
                         onTap: () {
                           Navigator.push(
                             context,
