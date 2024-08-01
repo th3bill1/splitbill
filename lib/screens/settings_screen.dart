@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/currency_provider.dart';
-import '../providers/auth_provider.dart'; // Import the auth provider
-import 'login_screen.dart'; // Import the login screen
-
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+import 'login_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});

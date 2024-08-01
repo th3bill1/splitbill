@@ -51,10 +51,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         actions: [
           invitations.when(
             data: (invitations) => IconButton(
-              icon: custom_badge.Badge(
+              icon: invitations.isNotEmpty ? custom_badge.Badge(
                 value: invitations.length.toString(),
                 child: const Icon(Icons.notifications),
-              ),
+              ) : Container(),
               onPressed: () {
                 Navigator.push(
                   context,

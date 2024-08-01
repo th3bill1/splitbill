@@ -16,6 +16,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await ref.read(authProvider.notifier).signIn(
+              _emailController.text,
+              _passwordController.text,
+            );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } catch (e) {
+        // Handle error
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //final auth = ref.watch(authProvider);
@@ -50,25 +67,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   }
                   return null;
                 },
+                onFieldSubmitted: (value) => _login(),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    try {
-                      await ref.read(authProvider.notifier).signIn(
-                            _emailController.text,
-                            _passwordController.text,
-                          );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      );
-                    } catch (e) {
-                      // Handle error
-                    }
-                  }
-                },
+                onPressed: _login,
                 child: const Text('Login'),
               ),
               TextButton(
