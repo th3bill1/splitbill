@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:splitbill/models/bill.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:splitbill/providers/currency_provider.dart';
+import 'package:splitbill/providers/user_provider.dart';
+import 'package:splitbill/models/user.dart';
 
 class AddBillScreen extends ConsumerStatefulWidget {
   final String billsplitId;
@@ -27,8 +29,8 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
         ref.read(currencyProvider); // Set default currency from settings
   }
 
-  void _addPerson() {
-    final nameController = TextEditingController();
+  void _addPerson(List<dynamic> friends) {
+    User? selectedFriend;
     final amountController = TextEditingController();
 
     showDialog(
@@ -39,9 +41,23 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+              DropdownButtonFormField<User>(
+                decoration: const InputDecoration(labelText: 'Select Friend'),
+                items: friends.map((friend) {
+                  return DropdownMenuItem<User>(
+                    value: friend,
+                    child: Text(friend.name),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  selectedFriend = value;
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select a friend';
+                  }
+                  return null;
+                },
               ),
               TextField(
                 controller: amountController,
@@ -53,15 +69,18 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _people.add(
-                    Person(
-                      name: nameController.text,
-                      amountPaid: double.parse(amountController.text),
-                    ),
-                  );
-                });
-                Navigator.pop(context);
+                if (selectedFriend != null &&
+                    amountController.text.isNotEmpty) {
+                  setState(() {
+                    _people.add(
+                      Person(
+                        name: selectedFriend!.name,
+                        amountPaid: double.parse(amountController.text),
+                      ),
+                    );
+                  });
+                  Navigator.pop(context);
+                }
               },
               child: const Text('Add'),
             ),
@@ -73,6 +92,10 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+    final friends =
+        user != null ? ref.watch(friendListProvider(user.id)).value ?? [] : [];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Bill'),
@@ -107,7 +130,7 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
               const SizedBox(height: 20),
               const Text('Participants', style: TextStyle(fontSize: 18)),
               ElevatedButton(
-                onPressed: _addPerson,
+                onPressed: () => _addPerson(friends),
                 child: const Text('Add Participant'),
               ),
               ListView.builder(

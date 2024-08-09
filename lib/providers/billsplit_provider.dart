@@ -28,13 +28,7 @@ class BillSplitNotifier extends StateNotifier<List<BillSplit>> {
   Future<void> addBillToBillSplit(String billsplitId, Bill bill) async {
     final billSplit = state.firstWhere((bs) => bs.id == billsplitId);
     final updatedBills = List<Bill>.from(billSplit.bills)..add(bill);
-    final updatedBillSplit = BillSplit(
-      id: billSplit.id,
-      name: billSplit.name,
-      bills: updatedBills,
-      userId: billSplit.userId,
-    );
-
+    final updatedBillSplit = billSplit.copyWith(bills: updatedBills);
     await updateBillSplit(updatedBillSplit);
   }
 }

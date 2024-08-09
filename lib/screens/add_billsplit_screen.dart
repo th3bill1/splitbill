@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:splitbill/main.dart';
 import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/auth_provider.dart';
+import 'billsplit_details_screen.dart'; // Import the new screen
 
 class AddBillSplitScreen extends ConsumerStatefulWidget {
   const AddBillSplitScreen({super.key});
@@ -15,7 +17,7 @@ class AddBillSplitScreen extends ConsumerStatefulWidget {
 class _AddBillSplitScreenState extends ConsumerState<AddBillSplitScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final Uuid uuid = const Uuid(); // Define the Uuid object
+  final Uuid uuid = const Uuid();
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +52,23 @@ class _AddBillSplitScreenState extends ConsumerState<AddBillSplitScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final newBillSplit = BillSplit(
-                      id: uuid.v4(), // Generate a unique ID for the bill split
+                      id: uuid.v4(),
                       name: _nameController.text,
                       bills: [],
-                      userId: user.uid, // Assign the current user's UID
+                      ownerId: user.uid,
+                      defaultCurrency: ref.watch(currencyProvider),
+                      participantsIds: List<String>.empty(),
                     );
                     ref
                         .read(billsplitProvider(user.uid).notifier)
                         .addBillSplit(newBillSplit);
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BillSplitDetailsScreen(billSplit: newBillSplit),
+                      ),
+                    );
                   }
                 },
                 child: const Text('Add BillSplit'),
