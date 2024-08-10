@@ -6,16 +6,17 @@ import 'package:splitbill/models/user.dart';
 import 'package:splitbill/providers/user_provider.dart';
 import 'package:splitbill/screens/billsplit_screen.dart';
 
-class BillSplitDetailScreen extends ConsumerStatefulWidget {
+class BillSplitDetailsScreen extends ConsumerStatefulWidget {
   final BillSplit billSplit;
 
-  const BillSplitDetailScreen({super.key, required this.billSplit});
+  const BillSplitDetailsScreen({super.key, required this.billSplit});
 
   @override
-  _BillSplitDetailScreenState createState() => _BillSplitDetailScreenState();
+  _BillSplitDetailsScreenState createState() => _BillSplitDetailsScreenState();
 }
 
-class _BillSplitDetailScreenState extends ConsumerState<BillSplitDetailScreen> {
+class _BillSplitDetailsScreenState
+    extends ConsumerState<BillSplitDetailsScreen> {
   String _currency = 'USD';
 
   @override
@@ -309,7 +310,7 @@ class _BillSplitDetailScreenState extends ConsumerState<BillSplitDetailScreen> {
                     ),
                   );
                 },
-                child: const Text('Go to BillSplit Details'),
+                child: const Text('Save'),
               ),
             ),
           ],

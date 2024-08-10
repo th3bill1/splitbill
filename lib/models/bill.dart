@@ -1,20 +1,24 @@
 class Bill {
   String name;
   double amount;
-  List<Person> people;
+  String payerId;
+  List<String> splittersIds;
   String currency;
 
-  Bill(
-      {required this.name,
-      required this.amount,
-      required this.people,
-      required this.currency});
+  Bill({
+    required this.name,
+    required this.amount,
+    required this.payerId,
+    required this.splittersIds,
+    required this.currency,
+  });
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
       'amount': amount,
-      'people': people.map((person) => person.toMap()).toList(),
+      'payerId': payerId,
+      'splittersIds': splittersIds,
       'currency': currency,
     };
   }
@@ -23,30 +27,9 @@ class Bill {
     return Bill(
       name: map['name'],
       amount: map['amount'],
-      people:
-          List<Person>.from(map['people'].map((item) => Person.fromMap(item))),
+      payerId: map['payerId'],
+      splittersIds: List<String>.from(map['splittersIds']),
       currency: map['currency'],
-    );
-  }
-}
-
-class Person {
-  String name;
-  double amountPaid;
-
-  Person({required this.name, required this.amountPaid});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'amountPaid': amountPaid,
-    };
-  }
-
-  static Person fromMap(Map<String, dynamic> map) {
-    return Person(
-      name: map['name'],
-      amountPaid: map['amountPaid'],
     );
   }
 }

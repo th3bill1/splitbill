@@ -12,6 +12,11 @@ final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
   return UserNotifier(ref);
 });
 
+final userByIdProvider =
+    FutureProvider.family<User?, String>((ref, userId) async {
+  return ref.read(firestoreServiceProvider).getUser(userId);
+});
+
 const Uuid uuid = Uuid();
 
 class UserNotifier extends StateNotifier<User?> {

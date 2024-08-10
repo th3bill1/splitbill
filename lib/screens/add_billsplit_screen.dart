@@ -5,7 +5,7 @@ import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/auth_provider.dart';
-import 'package:splitbill/screens/billsplit_creation_screen.dart';
+import 'package:splitbill/screens/billsplit_details_screen.dart';
 
 class AddBillSplitScreen extends ConsumerStatefulWidget {
   const AddBillSplitScreen({super.key});
@@ -67,7 +67,7 @@ class _AddBillSplitScreenState extends ConsumerState<AddBillSplitScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BillSplitDetailScreen(billSplit: newBillSplit),
+                            BillSplitDetailsScreen(billSplit: newBillSplit),
                       ),
                     );
                   }

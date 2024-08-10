@@ -19,82 +19,27 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
-  final List<Person> _people = [];
   late String _currency;
+  User? _selectedPayer;
+  final Set<String> _selectedSplitters = {};
 
   @override
   void initState() {
     super.initState();
-    _currency =
-        ref.read(currencyProvider); // Set default currency from settings
-  }
-
-  void _addPerson(List<dynamic> friends) {
-    User? selectedFriend;
-    final amountController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Add Participant'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<User>(
-                decoration: const InputDecoration(labelText: 'Select Friend'),
-                items: friends.map((friend) {
-                  return DropdownMenuItem<User>(
-                    value: friend,
-                    child: Text(friend.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  selectedFriend = value;
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a friend';
-                  }
-                  return null;
-                },
-              ),
-              TextField(
-                controller: amountController,
-                decoration: const InputDecoration(labelText: 'Amount Paid'),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (selectedFriend != null &&
-                    amountController.text.isNotEmpty) {
-                  setState(() {
-                    _people.add(
-                      Person(
-                        name: selectedFriend!.name,
-                        amountPaid: double.parse(amountController.text),
-                      ),
-                    );
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
+    _currency = ref.read(currencyProvider);
   }
 
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    final friends =
-        user != null ? ref.watch(friendListProvider(user.id)).value ?? [] : [];
+    final billSplit = ref
+        .watch(billsplitProvider(user!.id))
+        .firstWhere((split) => split.id == widget.billsplitId);
+
+    final owner = ref.watch(userByIdProvider(billSplit.ownerId));
+    final participants = billSplit.participantsIds.map((id) {
+      return ref.watch(userByIdProvider(id));
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -104,7 +49,7 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
@@ -128,22 +73,87 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              const Text('Participants', style: TextStyle(fontSize: 18)),
-              ElevatedButton(
-                onPressed: () => _addPerson(friends),
-                child: const Text('Add Participant'),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: _people.length,
-                itemBuilder: (context, index) {
-                  final person = _people[index];
-                  return ListTile(
-                    title: Text(person.name),
-                    subtitle: Text('Amount Paid: ${person.amountPaid}'),
+              owner.when(
+                data: (user) {
+                  return DropdownButtonFormField<User>(
+                    decoration: const InputDecoration(labelText: 'Who Paid'),
+                    value: _selectedPayer,
+                    items: [
+                      if (user != null)
+                        DropdownMenuItem<User>(
+                          value: user,
+                          child: Text(user.name),
+                        ),
+                      ...participants.map((participant) {
+                        return participant.when(
+                          data: (user) => DropdownMenuItem<User>(
+                            value: user,
+                            child: Text(user!.name),
+                          ),
+                          loading: () => const DropdownMenuItem<User>(
+                            child: Text('Loading...'),
+                          ),
+                          error: (error, stack) => const DropdownMenuItem<User>(
+                            child: Text('Error loading user'),
+                          ),
+                        );
+                      }),
+                    ],
+                    onChanged: (User? newValue) {
+                      setState(() {
+                        _selectedPayer = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select who paid';
+                      }
+                      return null;
+                    },
                   );
                 },
+                loading: () => const CircularProgressIndicator(),
+                error: (error, stack) =>
+                    const Text('Error loading owner information'),
               ),
+              const SizedBox(height: 20),
+              const Text('Who Splits the Bill', style: TextStyle(fontSize: 18)),
+              CheckboxListTile(
+                title: Text(user.name),
+                value: _selectedSplitters.contains(user.id),
+                onChanged: (bool? selected) {
+                  setState(() {
+                    if (selected == true) {
+                      _selectedSplitters.add(user.id);
+                    } else {
+                      _selectedSplitters.remove(user.id);
+                    }
+                  });
+                },
+              ),
+              ...participants.map((participant) {
+                return participant.when(
+                  data: (user) => CheckboxListTile(
+                    title: Text(user!.name),
+                    value: _selectedSplitters.contains(user.id),
+                    onChanged: (bool? selected) {
+                      setState(() {
+                        if (selected == true) {
+                          _selectedSplitters.add(user.id);
+                        } else {
+                          _selectedSplitters.remove(user.id);
+                        }
+                      });
+                    },
+                  ),
+                  loading: () => const ListTile(
+                    title: Text('Loading...'),
+                  ),
+                  error: (error, stack) => const ListTile(
+                    title: Text('Error loading participant'),
+                  ),
+                );
+              }),
               const SizedBox(height: 20),
               const Text('Currency', style: TextStyle(fontSize: 18)),
               ListTile(
@@ -189,7 +199,8 @@ class _AddBillScreenState extends ConsumerState<AddBillScreen> {
                     final newBill = Bill(
                       name: _nameController.text,
                       amount: double.parse(_amountController.text),
-                      people: _people,
+                      payerId: _selectedPayer!.id,
+                      splittersIds: _selectedSplitters.toList(),
                       currency: _currency,
                     );
                     ref
