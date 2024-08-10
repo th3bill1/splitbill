@@ -7,6 +7,7 @@ class BillSplit {
   String ownerId;
   String defaultCurrency;
   List<String> participantsIds;
+  List<String> participantNames;
 
   BillSplit({
     required this.id,
@@ -15,6 +16,7 @@ class BillSplit {
     required this.ownerId,
     required this.defaultCurrency,
     required this.participantsIds,
+    required this.participantNames,
   });
 
   Map<String, dynamic> toMap() {
@@ -23,7 +25,9 @@ class BillSplit {
       'name': name,
       'bills': bills.map((bill) => bill.toMap()).toList(),
       'ownerId': ownerId,
-      'participantsIds': participantsIds.toList(),
+      'defaultCurrency': defaultCurrency,
+      'participantsIds': participantsIds,
+      'participantNames': participantNames,
     };
   }
 
@@ -35,16 +39,19 @@ class BillSplit {
       ownerId: map['ownerId'],
       defaultCurrency: map['defaultCurrency'],
       participantsIds: List<String>.from(map['participantsIds']),
+      participantNames: List<String>.from(map['participantNames']),
     );
   }
 
-  BillSplit copyWith(
-      {String? id,
-      String? name,
-      List<Bill>? bills,
-      String? ownerId,
-      String? defaultCurrency,
-      List<String>? participantsIds}) {
+  BillSplit copyWith({
+    String? id,
+    String? name,
+    List<Bill>? bills,
+    String? ownerId,
+    String? defaultCurrency,
+    List<String>? participantsIds,
+    List<String>? participantNames,
+  }) {
     return BillSplit(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -52,6 +59,7 @@ class BillSplit {
       ownerId: ownerId ?? this.ownerId,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
       participantsIds: participantsIds ?? this.participantsIds,
+      participantNames: participantNames ?? this.participantNames,
     );
   }
 
@@ -65,6 +73,7 @@ class BillSplit {
       participantsIds: participantsIds
           .where((participantId) => participantId != participantIdToRemove)
           .toList(),
+      participantNames: participantNames,
     );
   }
 }

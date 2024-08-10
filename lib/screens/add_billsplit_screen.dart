@@ -5,7 +5,7 @@ import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/auth_provider.dart';
-import 'billsplit_details_screen.dart'; // Import the new screen
+import 'package:splitbill/screens/billsplit_creation_screen.dart';
 
 class AddBillSplitScreen extends ConsumerStatefulWidget {
   const AddBillSplitScreen({super.key});
@@ -58,6 +58,7 @@ class _AddBillSplitScreenState extends ConsumerState<AddBillSplitScreen> {
                       ownerId: user.uid,
                       defaultCurrency: ref.watch(currencyProvider),
                       participantsIds: List<String>.empty(),
+                      participantNames: List<String>.empty(),
                     );
                     ref
                         .read(billsplitProvider(user.uid).notifier)
@@ -66,7 +67,7 @@ class _AddBillSplitScreenState extends ConsumerState<AddBillSplitScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BillSplitDetailsScreen(billSplit: newBillSplit),
+                            BillSplitCreationScreen(billSplit: newBillSplit),
                       ),
                     );
                   }

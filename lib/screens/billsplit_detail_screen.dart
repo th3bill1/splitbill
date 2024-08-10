@@ -22,8 +22,6 @@ class BillSplitDetailScreen extends ConsumerWidget {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-
-    // Find the current BillSplit based on the ID and user ID
     final currentBillSplit = ref
         .watch(billsplitProvider(user.uid))
         .firstWhere((b) => b.id == billsplit.id);

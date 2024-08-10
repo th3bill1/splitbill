@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:splitbill/models/user.dart';
 import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/models/friend_invitation.dart';
+import 'package:rxdart/rxdart.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -122,14 +123,29 @@ class FirestoreService {
   }
 
   Stream<List<BillSplit>> getBillSplits(String userId) {
-    return _db
+    final ownerQuery = _db
         .collection('billsplits')
-        .where('userId', isEqualTo: userId)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return BillSplit.fromMap(doc.data());
-      }).toList();
+        .where('ownerId', isEqualTo: userId)
+        .snapshots();
+    final participantQuery = _db
+        .collection('billsplits')
+        .where('participantsIds', arrayContains: userId)
+        .snapshots();
+    return CombineLatestStream.list([ownerQuery, participantQuery])
+        .map((snapshotList) {
+      final ownerBillSplits = snapshotList[0]
+          .docs
+          .map((doc) => BillSplit.fromMap(doc.data()))
+          .toList();
+      final participantBillSplits = snapshotList[1]
+          .docs
+          .map((doc) => BillSplit.fromMap(doc.data()))
+          .toList();
+      final allBillSplits = {
+        ...ownerBillSplits,
+        ...participantBillSplits,
+      }.toList();
+      return allBillSplits;
     });
   }
 
