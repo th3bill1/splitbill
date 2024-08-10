@@ -4,20 +4,18 @@ import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:splitbill/models/user.dart';
 import 'package:splitbill/providers/user_provider.dart';
-import 'package:splitbill/screens/billsplit_detail_screen.dart';
+import 'package:splitbill/screens/billsplit_screen.dart';
 
-class BillSplitCreationScreen extends ConsumerStatefulWidget {
+class BillSplitDetailScreen extends ConsumerStatefulWidget {
   final BillSplit billSplit;
 
-  const BillSplitCreationScreen({super.key, required this.billSplit});
+  const BillSplitDetailScreen({super.key, required this.billSplit});
 
   @override
-  _BillSplitCreationScreenState createState() =>
-      _BillSplitCreationScreenState();
+  _BillSplitDetailScreenState createState() => _BillSplitDetailScreenState();
 }
 
-class _BillSplitCreationScreenState
-    extends ConsumerState<BillSplitCreationScreen> {
+class _BillSplitDetailScreenState extends ConsumerState<BillSplitDetailScreen> {
   String _currency = 'USD';
 
   @override
@@ -193,7 +191,6 @@ class _BillSplitCreationScreenState
     final friends = user != null
         ? ref.watch(friendListProvider(user.id))
         : const AsyncValue<List<User>>.loading();
-    final participantsIds = widget.billSplit.participantsIds;
 
     return Scaffold(
       appBar: AppBar(
@@ -306,7 +303,7 @@ class _BillSplitCreationScreenState
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BillSplitDetailScreen(
+                      builder: (context) => BillSplitScreen(
                         billsplit: widget.billSplit,
                       ),
                     ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:splitbill/screens/add_billsplit_screen.dart';
-import 'package:splitbill/screens/billsplit_detail_screen.dart';
+import 'package:splitbill/screens/billsplit_screen.dart';
 import '../providers/auth_provider.dart';
 
 class BillSplitListScreen extends ConsumerWidget {
@@ -33,7 +33,7 @@ class BillSplitListScreen extends ConsumerWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        BillSplitDetailScreen(billsplit: billsplit)),
+                        BillSplitScreen(billsplit: billsplit)),
               );
             },
           );

@@ -67,7 +67,7 @@ class _AddBillSplitScreenState extends ConsumerState<AddBillSplitScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BillSplitCreationScreen(billSplit: newBillSplit),
+                            BillSplitDetailScreen(billSplit: newBillSplit),
                       ),
                     );
                   }

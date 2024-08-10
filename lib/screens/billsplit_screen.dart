@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/providers/billsplit_provider.dart';
+import 'package:splitbill/screens/billsplit_creation_screen.dart';
 import 'add_bill_screen.dart';
 import '../providers/auth_provider.dart';
 
-class BillSplitDetailScreen extends ConsumerWidget {
+class BillSplitScreen extends ConsumerWidget {
   final BillSplit billsplit;
 
-  const BillSplitDetailScreen({super.key, required this.billsplit});
+  const BillSplitScreen({super.key, required this.billsplit});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,6 +30,19 @@ class BillSplitDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(currentBillSplit.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        BillSplitDetailScreen(billSplit: currentBillSplit)),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: currentBillSplit.bills.length,
