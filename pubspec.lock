@@ -98,6 +98,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  currency_converter:
+    dependency: "direct main"
+    description:
+      name: currency_converter
+      sha256: "8a0edc6d7c1f1647ec33def1313b58519be63e4d2f19de9c8e4e2008beecea92"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.6"
   fake_async:
     dependency: transitive
     description:
@@ -313,6 +321,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+1"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.1"
   leak_tracker:
     dependency: transitive
     description:
