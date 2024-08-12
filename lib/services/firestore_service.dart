@@ -3,6 +3,7 @@ import 'package:splitbill/models/user.dart';
 import 'package:splitbill/models/billsplit.dart';
 import 'package:splitbill/models/friend_invitation.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:splitbill/models/bill.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -180,6 +181,59 @@ class FirestoreService {
       return snapshot.docs
           .map((doc) => FriendInvitation.fromMap(doc.data()))
           .toList();
+    });
+  }
+
+  Future<void> addBillToBillSplit(String billsplitId, Bill bill) async {
+    final billSplitDoc = _db.collection('billsplits').doc(billsplitId);
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(billSplitDoc);
+      if (snapshot.exists) {
+        final billSplit = BillSplit.fromMap(snapshot.data()!);
+        billSplit.bills.add(bill);
+        transaction.update(billSplitDoc,
+            {'bills': billSplit.bills.map((b) => b.toMap()).toList()});
+      } else {
+        throw Exception("BillSplit not found");
+      }
+    });
+  }
+
+  Future<void> removeBillFromBillSplit(String billsplitId, Bill bill) async {
+    final billSplitDoc = _db.collection('billsplits').doc(billsplitId);
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(billSplitDoc);
+      if (snapshot.exists) {
+        final billSplit = BillSplit.fromMap(snapshot.data()!);
+        billSplit.bills
+            .removeWhere((b) => b.name == bill.name && b.amount == bill.amount);
+        transaction.update(billSplitDoc,
+            {'bills': billSplit.bills.map((b) => b.toMap()).toList()});
+      } else {
+        throw Exception("BillSplit not found");
+      }
+    });
+  }
+
+  Future<void> updateBillInBillSplit(
+      String billsplitId, Bill updatedBill) async {
+    final billSplitDoc = _db.collection('billsplits').doc(billsplitId);
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(billSplitDoc);
+      if (snapshot.exists) {
+        final billSplit = BillSplit.fromMap(snapshot.data()!);
+        final index = billSplit.bills.indexWhere((b) =>
+            b.name == updatedBill.name && b.amount == updatedBill.amount);
+        if (index != -1) {
+          billSplit.bills[index] = updatedBill;
+          transaction.update(billSplitDoc,
+              {'bills': billSplit.bills.map((b) => b.toMap()).toList()});
+        } else {
+          throw Exception("Bill not found in BillSplit");
+        }
+      } else {
+        throw Exception("BillSplit not found");
+      }
     });
   }
 }

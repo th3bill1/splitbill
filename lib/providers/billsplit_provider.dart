@@ -13,6 +13,11 @@ class BillSplitNotifier extends StateNotifier<List<BillSplit>> {
     });
   }
 
+  Future<BillSplit> getBillSplitFromId(String id) async {
+    final billSplit = state.firstWhere((bs) => bs.id == id);
+    return billSplit;
+  }
+
   Future<void> addBillSplit(BillSplit billsplit) async {
     await _firestoreService.addBillSplit(billsplit);
   }

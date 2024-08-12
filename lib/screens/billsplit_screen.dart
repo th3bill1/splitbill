@@ -5,6 +5,7 @@ import 'package:splitbill/providers/billsplit_provider.dart';
 import 'package:splitbill/screens/billsplit_details_screen.dart';
 import 'add_bill_screen.dart';
 import '../providers/auth_provider.dart';
+import 'package:splitbill/screens/bill_screen.dart';
 
 class BillSplitScreen extends ConsumerWidget {
   final BillSplit billsplit;
@@ -51,6 +52,14 @@ class BillSplitScreen extends ConsumerWidget {
           return ListTile(
             title: Text(bill.name),
             subtitle: Text('Total: ${bill.currency} ${bill.amount}'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        BillScreen(bill: bill, billsplit: currentBillSplit)),
+              );
+            },
           );
         },
       ),
