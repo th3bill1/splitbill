@@ -67,7 +67,6 @@ class FriendProfileScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            // Friend's Icon with FutureBuilder to load image correctly
             FutureBuilder<Uint8List?>(
               future: imageBytes,
               builder: (context, snapshot) {
@@ -95,19 +94,16 @@ class FriendProfileScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 16),
-            // Friend's Nickname
             Text(
               friend.name,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            // Friend's Email
             Text(
               friend.email,
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 24),
-            // Shared SplitBills Section
             const Text(
               'Shared Bill Splits',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

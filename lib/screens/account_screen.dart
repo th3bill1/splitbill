@@ -31,7 +31,7 @@ class AccountScreen extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             FutureBuilder<Uint8List?>(
               future: imageBytes,
@@ -59,9 +59,39 @@ class AccountScreen extends ConsumerWidget {
                 }
               },
             ),
-            const SizedBox(height: 20),
-            Text('Name: ${user.name}', style: const TextStyle(fontSize: 18)),
-            Text('Email: ${user.email}', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 16),
+            Text(
+              user.name,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              user.email,
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 40),
+            const Text(
+              'Recent Bills',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 0),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Text(
+                        'No recent bills available.',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
