@@ -30,46 +30,40 @@ class AccountScreen extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: user == null
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  FutureBuilder<Uint8List?>(
-                    future: imageBytes,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircleAvatar(
-                          radius: 50,
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return const CircleAvatar(
-                          backgroundImage:
-                              AssetImage('assets/default_avatar.png'),
-                          radius: 50,
-                        );
-                      } else if (snapshot.hasData && snapshot.data != null) {
-                        return CircleAvatar(
-                          backgroundImage: MemoryImage(snapshot.data!),
-                          radius: 50,
-                        );
-                      } else {
-                        return const CircleAvatar(
-                          backgroundImage:
-                              AssetImage('assets/default_avatar.png'),
-                          radius: 50,
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  Text('Name: ${user.name}',
-                      style: const TextStyle(fontSize: 18)),
-                  Text('Email: ${user.email}',
-                      style: const TextStyle(fontSize: 18)),
-                ],
-              ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            FutureBuilder<Uint8List?>(
+              future: imageBytes,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircleAvatar(
+                    radius: 50,
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return const CircleAvatar(
+                    backgroundImage: AssetImage('assets/default_avatar.png'),
+                    radius: 50,
+                  );
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  return CircleAvatar(
+                    backgroundImage: MemoryImage(snapshot.data!),
+                    radius: 50,
+                  );
+                } else {
+                  return const CircleAvatar(
+                    backgroundImage: AssetImage('assets/default_avatar.png'),
+                    radius: 50,
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            Text('Name: ${user.name}', style: const TextStyle(fontSize: 18)),
+            Text('Email: ${user.email}', style: const TextStyle(fontSize: 18)),
+          ],
+        ),
       ),
     );
   }
