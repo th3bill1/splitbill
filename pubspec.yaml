@@ -22,7 +22,6 @@ dependencies:
       path: packages/cloud_firestore/cloud_firestore
       ref: pull/13135/head
   uuid: ^4.4.2
-  currency_converter: ^0.0.5
 
   cupertino_icons: ^1.0.2
 

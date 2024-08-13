@@ -7,6 +7,7 @@ import 'package:splitbill/screens/billsplit_details_screen.dart';
 import 'add_bill_screen.dart';
 import '../providers/auth_provider.dart';
 import 'package:splitbill/screens/bill_screen.dart';
+import 'dart:math';
 
 class BillSplitScreen extends ConsumerWidget {
   final BillSplit billsplit;
@@ -49,7 +50,6 @@ class BillSplitScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // Overview Section
           Card(
             elevation: 4,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -61,8 +61,6 @@ class BillSplitScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16.0),
-
-          // Detailed Breakdown
           const Text(
             'Participant Balances',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -70,8 +68,6 @@ class BillSplitScreen extends ConsumerWidget {
           const SizedBox(height: 8.0),
           _buildParticipantBalances(ref, currentBillSplit),
           const SizedBox(height: 16.0),
-
-          // Payment Instructions
           const Text(
             'Payment Instructions',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -79,8 +75,6 @@ class BillSplitScreen extends ConsumerWidget {
           const SizedBox(height: 8.0),
           _buildPaymentInstructions(ref, currentBillSplit),
           const SizedBox(height: 16.0),
-
-          // Bills List
           const Text(
             'Bills',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -120,30 +114,29 @@ class BillSplitScreen extends ConsumerWidget {
   }
 
   Widget _buildParticipantBalances(WidgetRef ref, BillSplit billSplit) {
-    // Here you would calculate the net balance for each participant.
-    // This is just a placeholder.
+    final participants = [billSplit.ownerId] + billSplit.participantsIds;
+    final balances = calculateBalances(billSplit);
     return Column(
-      children: billSplit.participantsIds.map((participantId) {
+      children: participants.map((participantId) {
         return ListTile(
           title: Text(_getUserName(ref, participantId)),
-          subtitle: const Text('Balance: \$XX.XX'), // Placeholder balance
+          subtitle: Text('Balance: \$${balances[participantId]}'),
         );
       }).toList(),
     );
   }
 
   Widget _buildPaymentInstructions(WidgetRef ref, BillSplit billSplit) {
-    // This is where you would calculate and display who owes whom.
-    // This is just a placeholder.
+    final balances = calculateBalances(billSplit);
+    final transactions = settleDebts(balances);
     return Column(
-      children: [
-        ListTile(
-          title: Text(
-              '${_getUserName(ref, 'userId1')} should pay ${_getUserName(ref, 'userId2')}'),
-          trailing: const Text('\$XX.XX'),
-        ),
-        // More payment instructions...
-      ],
+      children: transactions.map((transaction) {
+        return ListTile(
+          title: Text(_getUserName(ref, transaction['from'])),
+          subtitle: Text(
+              'Pay \$${transaction['amount']} to ${_getUserName(ref, transaction['to'])}'),
+        );
+      }).toList(),
     );
   }
 
@@ -153,5 +146,53 @@ class BillSplitScreen extends ConsumerWidget {
           orElse: () => 'Unknown',
         );
     return user;
+  }
+
+  List<Map<String, dynamic>> settleDebts(Map<String, double> balances) {
+    List<MapEntry<String, double>> balanceEntries = balances.entries.toList();
+    balanceEntries.sort((a, b) => a.value.compareTo(b.value));
+
+    List<Map<String, dynamic>> transactions = [];
+    int i = 0;
+    int j = balanceEntries.length - 1;
+
+    while (i < j) {
+      var debtor = balanceEntries[i];
+      var creditor = balanceEntries[j];
+
+      double payment = min((-debtor.value).abs(), creditor.value);
+
+      transactions.add({
+        'from': debtor.key,
+        'to': creditor.key,
+        'amount': payment,
+      });
+
+      balanceEntries[i] = MapEntry(debtor.key, debtor.value + payment);
+      balanceEntries[j] = MapEntry(creditor.key, creditor.value - payment);
+
+      if (balanceEntries[i].value == 0) i++;
+      if (balanceEntries[j].value == 0) j--;
+    }
+
+    return transactions;
+  }
+
+  Map<String, double> calculateBalances(BillSplit billSplit) {
+    final participants = [billSplit.ownerId] + billsplit.participantsIds;
+    final balances = Map<String, double>.fromIterables(
+        participants, List.filled(participants.length, 0.0));
+    for (var participant in participants) {
+      for (var bill in billSplit.bills) {
+        if (bill.payerId == participant) {
+          double amount = bill.amount / bill.splittersIds.length;
+          balances[participant] = balances[participant]! + amount;
+        } else if (bill.splittersIds.contains(participant)) {
+          double amount = bill.amount / bill.splittersIds.length;
+          balances[participant] = balances[participant]! - amount;
+        }
+      }
+    }
+    return balances;
   }
 }
