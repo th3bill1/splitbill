@@ -97,7 +97,7 @@ class SettingsScreen extends ConsumerWidget {
                 },
               ),
             ),
-            const Spacer(), // Pushes the sign-out button to the bottom
+            const Spacer(),
             Center(
               child: TextButton(
                 onPressed: () async {

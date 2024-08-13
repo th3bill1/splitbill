@@ -6,6 +6,7 @@ import '../providers/user_provider.dart';
 import 'package:splitbill/widgets/badge.dart' as custom_badge;
 import 'package:splitbill/screens/firend_invitations_screen.dart';
 import 'package:splitbill/screens/add_friend_screen.dart';
+import 'friend_profile_screen.dart';
 
 class FriendListScreen extends ConsumerWidget {
   const FriendListScreen({super.key});
@@ -65,15 +66,14 @@ class FriendListScreen extends ConsumerWidget {
             return ListTile(
               title: Text(friend.name),
               subtitle: Text(friend.email),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () async {
-                  await ref.read(userProvider.notifier).removeFriend(friend.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Friend removed')),
-                  );
-                },
-              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          FriendProfileScreen(friend: friend)),
+                );
+              },
             );
           },
         ),

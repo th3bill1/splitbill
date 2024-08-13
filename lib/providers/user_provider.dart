@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:splitbill/providers/auth_provider.dart';
 import '../models/user.dart';
 import '../models/friend_invitation.dart';
 import '../services/firestore_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 final firestoreServiceProvider =
     Provider<FirestoreService>((ref) => FirestoreService());
@@ -22,6 +26,7 @@ const Uuid uuid = Uuid();
 class UserNotifier extends StateNotifier<User?> {
   final Ref _ref;
   UserNotifier(this._ref) : super(null);
+  final storageRef = FirebaseStorage.instance.ref();
 
   Future<void> loadUser(String userId) async {
     final user = await _ref.read(firestoreServiceProvider).getUser(userId);
@@ -31,7 +36,7 @@ class UserNotifier extends StateNotifier<User?> {
   Future<void> addUser(String email, String name) async {
     var id = _ref.read(authProvider)?.uid;
     if (id == null) throw Exception('Invalid id');
-    User user = User(id: id, email: email, name: name, friends: [], icon: "");
+    User user = User(id: id, email: email, name: name, friends: []);
     await _ref.read(firestoreServiceProvider).addUser(user);
     state = user;
   }
@@ -93,6 +98,22 @@ class UserNotifier extends StateNotifier<User?> {
 
   void clearUser() {
     state = null;
+  }
+
+  Future<void> uploadImage(String userId, String imagePath) async {
+    final ref = storageRef.child('user_icons/$userId');
+    File file = File(imagePath);
+    await ref.putFile(file);
+  }
+
+  Future<Uint8List?> downloadImage(String userId) async {
+    try {
+      final ref = storageRef.child('user_icons/$userId');
+      final data = await ref.getData();
+      return data;
+    } catch (e) {
+      return null;
+    }
   }
 }
 

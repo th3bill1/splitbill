@@ -236,4 +236,27 @@ class FirestoreService {
       }
     });
   }
+
+  Stream<List<BillSplit>> getSharedBillSplits(String userId) {
+    final ownerQuery = _db
+        .collection('billsplits')
+        .where('ownerId', isEqualTo: userId)
+        .snapshots();
+    final participantQuery = _db
+        .collection('billsplits')
+        .where('participantsIds', arrayContains: userId)
+        .snapshots();
+    return CombineLatestStream.list([ownerQuery, participantQuery])
+        .map((snapshotList) {
+      final ownerBillSplits = snapshotList[0]
+          .docs
+          .map((doc) => BillSplit.fromMap(doc.data()))
+          .toList();
+      final participantBillSplits = snapshotList[1]
+          .docs
+          .map((doc) => BillSplit.fromMap(doc.data()))
+          .toList();
+      return [...ownerBillSplits, ...participantBillSplits];
+    });
+  }
 }

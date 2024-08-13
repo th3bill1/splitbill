@@ -3,14 +3,12 @@ class User {
   String name;
   String email;
   List<String> friends;
-  String icon;
 
   User({
     required this.id,
     required this.name,
     required this.email,
     required this.friends,
-    required this.icon,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,7 +17,6 @@ class User {
       'name': name,
       'email': email,
       'friends': friends,
-      'icon': icon,
     };
   }
 
@@ -29,7 +26,6 @@ class User {
       name: map['name'],
       email: map['email'],
       friends: List<String>.from(map['friends'] ?? []),
-      icon: map['icon'] ?? '',
     );
   }
 }

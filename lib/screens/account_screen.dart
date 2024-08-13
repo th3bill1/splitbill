@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/user_provider.dart';
@@ -10,6 +10,7 @@ class AccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
+    final imageBytes = ref.watch(userProvider.notifier).downloadImage(user!.id);
 
     return Scaffold(
       appBar: AppBar(
@@ -34,12 +35,33 @@ class AccountScreen extends ConsumerWidget {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  CircleAvatar(
-                    backgroundImage: user.icon.isNotEmpty
-                        ? FileImage(File(user.icon))
-                        : const AssetImage('assets/default_avatar.png')
-                            as ImageProvider,
-                    radius: 50,
+                  FutureBuilder<Uint8List?>(
+                    future: imageBytes,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircleAvatar(
+                          radius: 50,
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const CircleAvatar(
+                          backgroundImage:
+                              AssetImage('assets/default_avatar.png'),
+                          radius: 50,
+                        );
+                      } else if (snapshot.hasData && snapshot.data != null) {
+                        return CircleAvatar(
+                          backgroundImage: MemoryImage(snapshot.data!),
+                          radius: 50,
+                        );
+                      } else {
+                        return const CircleAvatar(
+                          backgroundImage:
+                              AssetImage('assets/default_avatar.png'),
+                          radius: 50,
+                        );
+                      }
+                    },
                   ),
                   const SizedBox(height: 20),
                   Text('Name: ${user.name}',
