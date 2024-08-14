@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Bill {
   String name;
   double amount;
   String payerId;
   List<String> splittersIds;
   String currency;
+  DateTime creationDate;
+  DateTime lastUpdateDate;
 
   Bill({
     required this.name,
@@ -11,6 +15,8 @@ class Bill {
     required this.payerId,
     required this.splittersIds,
     required this.currency,
+    required this.creationDate,
+    required this.lastUpdateDate,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +26,8 @@ class Bill {
       'payerId': payerId,
       'splittersIds': splittersIds,
       'currency': currency,
+      'creationDate': creationDate,
+      'lastUpdateDate': lastUpdateDate,
     };
   }
 
@@ -30,6 +38,8 @@ class Bill {
       payerId: map['payerId'],
       splittersIds: List<String>.from(map['splittersIds']),
       currency: map['currency'],
+      creationDate: (map['creationDate'] as Timestamp).toDate(),
+      lastUpdateDate: (map['lastUpdateDate'] as Timestamp).toDate(),
     );
   }
 }

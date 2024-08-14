@@ -75,9 +75,25 @@ class BillSplitScreen extends ConsumerWidget {
           const SizedBox(height: 8.0),
           _buildPaymentInstructions(ref, currentBillSplit),
           const SizedBox(height: 16.0),
-          const Text(
-            'Bills',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Bills',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddBillScreen(billsplitId: currentBillSplit.id)),
+                  );
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 8.0),
           ...currentBillSplit.bills.map((bill) => ListTile(
@@ -95,17 +111,6 @@ class BillSplitScreen extends ConsumerWidget {
               )),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AddBillScreen(billsplitId: currentBillSplit.id)),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 
@@ -120,7 +125,8 @@ class BillSplitScreen extends ConsumerWidget {
       children: participants.map((participantId) {
         return ListTile(
           title: Text(_getUserName(ref, participantId)),
-          subtitle: Text('Balance: \$${balances[participantId]}'),
+          subtitle:
+              Text('Balance: \$${balances[participantId]!.toStringAsFixed(2)}'),
         );
       }).toList(),
     );
@@ -134,7 +140,7 @@ class BillSplitScreen extends ConsumerWidget {
         return ListTile(
           title: Text(_getUserName(ref, transaction['from'])),
           subtitle: Text(
-              'Pay \$${transaction['amount']} to ${_getUserName(ref, transaction['to'])}'),
+              'Pay \$${(transaction['amount'] as num).toStringAsFixed(2)} to ${_getUserName(ref, transaction['to'])}'),
         );
       }).toList(),
     );
@@ -182,12 +188,12 @@ class BillSplitScreen extends ConsumerWidget {
     final participants = [billSplit.ownerId] + billsplit.participantsIds;
     final balances = Map<String, double>.fromIterables(
         participants, List.filled(participants.length, 0.0));
-    for (var participant in participants) {
-      for (var bill in billSplit.bills) {
+    for (var bill in billSplit.bills) {
+      for (var participant in participants) {
         if (bill.payerId == participant) {
-          double amount = bill.amount / bill.splittersIds.length;
-          balances[participant] = balances[participant]! + amount;
-        } else if (bill.splittersIds.contains(participant)) {
+          balances[participant] = balances[participant]! + bill.amount;
+        }
+        if (bill.splittersIds.contains(participant)) {
           double amount = bill.amount / bill.splittersIds.length;
           balances[participant] = balances[participant]! - amount;
         }

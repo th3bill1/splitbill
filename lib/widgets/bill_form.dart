@@ -208,12 +208,15 @@ class _BillFormState extends ConsumerState<BillForm> {
           ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
+                final currentDate = DateTime.now();
                 final bill = Bill(
                   name: _nameController.text,
                   amount: double.parse(_amountController.text),
                   payerId: _selectedPayer!.id,
                   splittersIds: _selectedSplitters.toList(),
                   currency: _currency,
+                  creationDate: widget.bill?.creationDate ?? currentDate,
+                  lastUpdateDate: currentDate,
                 );
                 widget.onSubmit(bill);
                 Navigator.pop(context);
